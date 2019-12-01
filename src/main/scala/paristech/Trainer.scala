@@ -64,7 +64,7 @@ object Trainer {
     println("hello world ! from Trainer")
 
     // lire le fichier sauvegardé précédemment
-    val parquetFileDF = spark.read.parquet("/Users/fayyazali/Desktop/MS Big Data - Telecom Paris/Introduction au framework HADOOP - INF729/SPARK/TP3/prepared_trainingset")
+    val parquetFileDF = spark.read.parquet("TP3/prepared_trainingset")
 
     val tokenizer = new RegexTokenizer()
       .setPattern("\\W+")

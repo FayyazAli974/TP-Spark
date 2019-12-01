@@ -1,0 +1,22 @@
+[0m[[0m[31merror[0m] [0m[0m/Users/fayyazali/Desktop/MS Big Data - Telecom Paris/Introduction au framework HADOOP - INF729/SPARK/spark_project_kickstarter_2019_2020/src/main/scala/paristech/Preprocessor.scala:50:27: value $ is not a member of StringContext[0m
+[0m[[0m[31merror[0m] [0m[0m      .withColumn("goal", $"goal".cast("Int"))[0m
+[0m[[0m[31merror[0m] [0m[0m                          ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/fayyazali/Desktop/MS Big Data - Telecom Paris/Introduction au framework HADOOP - INF729/SPARK/spark_project_kickstarter_2019_2020/src/main/scala/paristech/Preprocessor.scala:51:31: value $ is not a member of StringContext[0m
+[0m[[0m[31merror[0m] [0m[0m      .withColumn("deadline", $"deadline".cast("Int"))[0m
+[0m[[0m[31merror[0m] [0m[0m                              ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/fayyazali/Desktop/MS Big Data - Telecom Paris/Introduction au framework HADOOP - INF729/SPARK/spark_project_kickstarter_2019_2020/src/main/scala/paristech/Preprocessor.scala:52:39: value $ is not a member of StringContext[0m
+[0m[[0m[31merror[0m] [0m[0m      .withColumn("state_changed_at", $"state_changed_at".cast("Int"))[0m
+[0m[[0m[31merror[0m] [0m[0m                                      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/fayyazali/Desktop/MS Big Data - Telecom Paris/Introduction au framework HADOOP - INF729/SPARK/spark_project_kickstarter_2019_2020/src/main/scala/paristech/Preprocessor.scala:53:33: value $ is not a member of StringContext[0m
+[0m[[0m[31merror[0m] [0m[0m      .withColumn("created_at", $"created_at".cast("Int"))[0m
+[0m[[0m[31merror[0m] [0m[0m                                ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/fayyazali/Desktop/MS Big Data - Telecom Paris/Introduction au framework HADOOP - INF729/SPARK/spark_project_kickstarter_2019_2020/src/main/scala/paristech/Preprocessor.scala:54:34: value $ is not a member of StringContext[0m
+[0m[[0m[31merror[0m] [0m[0m      .withColumn("launched_at", $"launched_at".cast("Int"))[0m
+[0m[[0m[31merror[0m] [0m[0m                                 ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/fayyazali/Desktop/MS Big Data - Telecom Paris/Introduction au framework HADOOP - INF729/SPARK/spark_project_kickstarter_2019_2020/src/main/scala/paristech/Preprocessor.scala:55:36: value $ is not a member of StringContext[0m
+[0m[[0m[31merror[0m] [0m[0m      .withColumn("backers_count", $"backers_count".cast("Int"))[0m
+[0m[[0m[31merror[0m] [0m[0m                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/fayyazali/Desktop/MS Big Data - Telecom Paris/Introduction au framework HADOOP - INF729/SPARK/spark_project_kickstarter_2019_2020/src/main/scala/paristech/Preprocessor.scala:56:35: value $ is not a member of StringContext[0m
+[0m[[0m[31merror[0m] [0m[0m      .withColumn("final_status", $"final_status".cast("Int"))[0m
+[0m[[0m[31merror[0m] [0m[0m                                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m7 errors found[0m

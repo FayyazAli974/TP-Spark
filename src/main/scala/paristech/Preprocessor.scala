@@ -138,7 +138,7 @@ object Preprocessor {
 
 
     // ##################### Ecriture ##########################
-    df_final.write.parquet("/Users/fayyazali/Desktop/MS Big Data - Telecom Paris/Introduction au framework HADOOP - INF729/SPARK/TP2")
+    df_final.write.parquet("TP2_Output")
     // #########################################################
 
 
