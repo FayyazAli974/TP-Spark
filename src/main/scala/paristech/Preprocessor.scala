@@ -81,7 +81,7 @@ object Preprocessor {
       .read
       .option("header", true) // utilise la première ligne du (des) fichier(s) comme header
       .option("inferSchema", "true") // pour inférer le type de chaque colonne (Int, String, etc.)
-      .csv("/Users/fayyazali/Desktop/MS Big Data - Telecom Paris/Introduction au framework HADOOP - INF729/SPARK/cours-spark-telecom-master/data/train_clean.csv")
+      .csv("/data/train_clean.csv")
 
 
     val dfCasted: DataFrame = df
@@ -138,7 +138,7 @@ object Preprocessor {
 
 
     // ##################### Ecriture ##########################
-    df_final.write.parquet("TP2_Output")
+    df_final.write.parquet("/TP2_Output")
     // #########################################################
 
 
