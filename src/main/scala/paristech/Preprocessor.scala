@@ -81,9 +81,10 @@ object Preprocessor {
       .read
       .option("header", true) // utilise la première ligne du (des) fichier(s) comme header
       .option("inferSchema", "true") // pour inférer le type de chaque colonne (Int, String, etc.)
-      .csv("/data/train_clean.csv")
+      .csv("src/main/resources/train/train_clean.csv")
 
 
+    // Assignez le type Int aux colonnes qui vous semblent contenir des entiers :
     val dfCasted: DataFrame = df
       .withColumn("goal", $"goal".cast("Int"))
       .withColumn("deadline", $"deadline".cast("Int"))
@@ -94,22 +95,28 @@ object Preprocessor {
       .withColumn("final_status", $"final_status".cast("Int"))
 
 
+    // Suppression de la colonne disable_communication
     val df2: DataFrame = dfCasted.drop("disable_communication")
 
 
+    // Suppression des colonnes backers_count et state_changed_at
+    // Pour ne pas avoir des informations 'du futur' pour notre modèle
     val dfNoFutur: DataFrame = df2.drop("backers_count", "state_changed_at")
 
 
+    // Nettoyage des colonnes Country et Currency
     val dfCountry: DataFrame = dfNoFutur
       .withColumn("country2", cleanCountryUdf($"country", $"currency"))
       .withColumn("currency2", cleanCurrencyUdf($"currency"))
       .drop("country", "currency")
 
 
+    // Selection des projets terminés
     val df_finalstatus: DataFrame = dfCountry
       .where($"final_status" === "0" || $"final_status" === "1")
 
 
+    // Rajout du temps de préparation du projet
     val df_time: DataFrame = df_finalstatus
       .withColumn("days_campaign",NbJoursCampUdf($"launched_at",$"deadline"))
       .withColumn("hours_prepa",HoursPrepaUdf($"created_at",$"launched_at"))
@@ -117,6 +124,7 @@ object Preprocessor {
       .drop("launched_at","created_at","deadline")
 
 
+    // Concaténation de toutes les colonnes avec du texte
     val df_texte: DataFrame = df_time
       .withColumn("name_2",lower($"name"))
       .withColumn("desc_2",lower($"desc"))
@@ -128,6 +136,7 @@ object Preprocessor {
       .withColumn("text",concat(($"name"),lit(" "),($"desc"),lit(" "),($"keywords")))
 
 
+    // Traitement des valeurs nulles
     val df_final: DataFrame = df_texte
       .withColumn("days_campaign", when($"days_campaign".isNull, -1).otherwise($"days_campaign"))
       .withColumn("hours_prepa", when($"hours_prepa".isNull, -1).otherwise($"hours_prepa"))
@@ -138,7 +147,8 @@ object Preprocessor {
 
 
     // ##################### Ecriture ##########################
-    df_final.write.parquet("/TP2_Output")
+    df_final.write.mode("overwrite").parquet("TP2_Output/")
+    df_final.write.mode("overwrite").parquet("src/main/resources/preprocessed")
     // #########################################################
 
 

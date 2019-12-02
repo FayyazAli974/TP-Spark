@@ -63,50 +63,54 @@ object Trainer {
 
     println("hello world ! from Trainer")
 
-    // lire le fichier sauvegardé précédemment
-    val parquetFileDF = spark.read.parquet("/TP3_input/prepared_trainingset")
+    // #### Processing ####
+    // Lecture du fichier cleané du TP précédent
+    val parquetFileDF = spark.read.parquet("TP3_input/prepared_trainingset")
 
+    // Split en mots
     val tokenizer = new RegexTokenizer()
       .setPattern("\\W+")
       .setGaps(true)
       .setInputCol("text")
-      .setOutputCol("raw")
+      .setOutputCol("tokens")
 
-
+    // Retrait des Stop Words
     val remover = new StopWordsRemover()
-      .setInputCol("raw")
+      .setInputCol("tokens")
       .setOutputCol("filtered")
 
-
+    // Term frequency
     val cvModel: CountVectorizer = new CountVectorizer()
       .setInputCol("filtered")
       .setOutputCol("rawfeatures")
 
-
+    // Inverse document frequency
     val idf = new IDF()
       .setInputCol("rawfeatures")
       .setOutputCol("tfidf")
 
-
+    // country2 en numérique
     val indexer = new StringIndexer()
       .setInputCol("country2")
       .setOutputCol("country_indexed")
 
-
+    // currency 2 en numérique
     val indexer2 = new StringIndexer()
       .setInputCol("currency2")
       .setOutputCol("currency_indexed")
 
-
+    // One-Hot encoding
     val encoder = new OneHotEncoderEstimator()
       .setInputCols(Array("country_indexed", "currency_indexed"))
       .setOutputCols(Array("country_onehot", "currency_onehot"))
 
-
+    // #### ML ####
+    // Creation du vecteur features
     val assembler = new VectorAssembler()
       .setInputCols(Array("tfidf", "days_campaign", "hours_prepa","goal","country_onehot","currency_onehot"))
       .setOutputCol("features")
 
+    // Classifieur regression logistique
     val lr = new LogisticRegression()
       .setElasticNetParam(0.0)
       .setFitIntercept(true)
@@ -119,34 +123,39 @@ object Trainer {
       .setTol(1.0e-6)
       .setMaxIter(20)
 
-
+    // Pipeline
     val pipeline = new Pipeline()
       .setStages(Array(tokenizer, remover, cvModel,idf , indexer, indexer2, encoder, assembler, lr))
 
-
+    // Split données en training et test
     val Array(training,test) = parquetFileDF.randomSplit(Array(0.9, 0.1))
 
+    // Entraînement du modèle sur train
     val model = pipeline.fit(training)
 
+    // Calcul de la prédiction
     val dfWithSimplePredictions = model.transform(test)
     dfWithSimplePredictions.groupBy("final_status", "predictions").count.show()
 
-
+    // Performance du modèle
     val evaluator = new MulticlassClassificationEvaluator()
       .setLabelCol("final_status")
       .setPredictionCol("predictions")
       .setMetricName("f1")
 
+    // Taux de bonnes prédictions
     val accuracy = evaluator.evaluate(dfWithSimplePredictions)
     println(s"Accuracy reg log: ${accuracy}")
 
-
+    // Recherche d'un meilleur modèle par Gridsearch
     val paramGrid = new ParamGridBuilder()
       .addGrid(cvModel.minDF, Array(55.0, 75.0, 95.0))
       .addGrid(lr.regParam, Array(10e-8, 10e-6, 10e-4, 10e-2))
+      .addGrid(lr.elasticNetParam,Array(0.0, 0.5, 1.0))
       .build()
 
 
+    // Evaluation en train / validation
     val trainValidationSplit = new TrainValidationSplit()
       .setEstimator(pipeline)
       .setEvaluator(evaluator)
@@ -154,28 +163,25 @@ object Trainer {
       .setTrainRatio(0.7)
       .setParallelism(2)
 
-
+    // fitting du meilleur modèle sur train
     val model_best = trainValidationSplit.fit(training)
 
+    // prediction sur test
     val dfWithSimplePredictions_best = model_best.transform(test)
 
-
-
+    // affichage
     dfWithSimplePredictions_best.select("features", "final_status", "predictions")
       .show()
 
-
+    // accuracy du meilleur modèle
     val accuracy_best = evaluator.evaluate(dfWithSimplePredictions_best)
     println(s"Accuracy best reg log: ${accuracy_best}")
 
 
-    model.write.overwrite().save("/tmp/spark-log-model")
-    model_best.write.overwrite().save("/tmp/spark-log-bestmodel")
 
-
-
-    //
-
+    // #### enregistrement du meilleur modèle ####
+    model.write.overwrite().save("TP3_output/spark-log-model")
+    model_best.write.overwrite().save("TP3_output/spark-log-bestmodel")
 
   }
 }
